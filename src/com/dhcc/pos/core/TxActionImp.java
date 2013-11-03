@@ -8,7 +8,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.maple.dxp.packets.FieldInfo;
 
 import com.dhc.pos.R;
 import com.dhc.pos.agent.client.ApplicationEnvironment;
@@ -676,18 +675,6 @@ public class TxActionImp implements TxAction {
 
 		// // 结果处理：日志记录，流水记录；
 		// processResult(context);
-	}
-
-	public void printfield(Map<String, List<FieldInfo>> map) {
-		System.out.println("=======================");
-		for (Map.Entry<String, List<FieldInfo>> entry : map.entrySet()) {
-			List<FieldInfo> list = entry.getValue();
-			for (FieldInfo info : list) {
-				System.out.println("FieldName:" + info.getName());
-				System.out.println("FiledValue" + info.getValue());
-			}
-		}
-		System.out.println("=======================");
 	}
 
 	// 输出一个报文内容
