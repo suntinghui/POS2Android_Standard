@@ -1,5 +1,6 @@
 package com.dhc.pos.agent.client;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
@@ -19,6 +20,7 @@ import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
 import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.entity.ByteArrayEntity;
+import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.params.BasicHttpParams;
@@ -224,12 +226,16 @@ public class HttpManager {
 			httpPost = new HttpPost(Constant.XMLURL);
 		}
 		
-		//httpPost.setHeader("Content-Type", "text/xml");
+		httpPost.setHeader("Content-Type", "application/octet-stream");
 		
 		try {
 			//httpPost.setEntity(new StringEntity(new String(outBytes, "GBK"),"GBK"));
-			//httpPost.setEntity(new InputStreamEntity(new ByteArrayInputStream(outBytes), outBytes.length));
-			httpPost.setEntity(new ByteArrayEntity(outBytes));
+			InputStream is = new ByteArrayInputStream(outBytes);
+			InputStreamEntity reqEntity = new InputStreamEntity(is, is.available());
+			httpPost.setEntity(reqEntity);
+			
+//			httpPost.setEntity(new ByteArrayEntity(outBytes));
+//			httpPost.setHeader("Content-type", "application/octet-stream");
 		} catch (Exception e1) {
 			throw new HttpException(e1.getMessage());
 		}

@@ -25,6 +25,7 @@ import com.dhc.pos.fsk.FSKService;
 import com.dhc.pos.model.FieldModel;
 import com.dhc.pos.model.ReversalModel;
 import com.dhc.pos.model.TransferModel;
+import com.dhcc.pos.core.SocketTransport;
 import com.dhcc.pos.core.TxActionImp;
 import com.itron.android.ftf.Util;
 import com.itron.protol.android.CommandReturn;
@@ -44,6 +45,10 @@ public class TransferPacketThread extends Thread{
 	private JSONStringer sendJSONStringer;
 	private HashMap<String, String> sendFieldMap;
 	private HashMap<String, String> receiveFieldMap;
+	
+	byte[] sendByte = new byte[]{};
+	
+	private TxActionImp action;
 	
 	public TransferPacketThread(String transferCode, HashMap<String,String> map, Handler handler){
 		this.transferCode = transferCode;
@@ -147,6 +152,47 @@ public class TransferPacketThread extends Thread{
 				helper.insertATransaction(model);
 			}
 			
+			if (Constant.isEFET){
+				Map<String, Object> tempMap = new HashMap<String, Object>();
+				tempMap.putAll(this.sendFieldMap);
+				
+				/*初始化上下文*/
+				action = new TxActionImp();
+				sendByte = action.first(tempMap);
+				
+				byte[] tempByte = new byte[sendByte.length-8];
+				System.arraycopy(sendByte, 0, tempByte, 0, tempByte.length);
+				
+				CalcMacHandler calcHandler = new CalcMacHandler();
+				FSKOperator.execute("Get_MAC|int:0,int:1,string:null,string:" + new String(tempByte), calcHandler);
+				
+//				try {
+//					byte[] respByte = HttpManager.getInstance().sendRequest(HttpManager.URL_JSON_TYPE, sendByte);
+//					Log.e("==", action.afterProcess(respByte).toString());
+//				} catch (HttpException e) {
+//					e.printStackTrace();
+//				}
+				
+				
+				
+//				receiveFieldMap = new HashMap<String, String>();
+//				for (String key : respMap.keySet()){
+//					this.receiveFieldMap.put(key, (String)respMap.get(key));
+//				}
+//				
+//				checkField39();
+				
+//				if (transferModel.shouldMac()){
+//					CheckMacHandler checkHandler = new CheckMacHandler();
+//					FSKOperator.execute("Get_CheckMAC|int:0,int:0,string:null,string:"+macsb.toString()+receiveFieldMap.get("field64"), checkHandler);//  计算MAC的数据+MAC（8字节）
+//					
+//				} else {
+//					checkField39();
+//				}
+				
+				return ;
+			}
+			
 			if (transferModel.shouldMac()){ // 需要进行MAC计算
 				CalcMacHandler calcHandler = new CalcMacHandler();
 				
@@ -173,41 +219,6 @@ public class TransferPacketThread extends Thread{
 	}
 	
 	private void sendPacket(){
-		if (Constant.isEFET){
-			Map<String, Object> tempMap = new HashMap<String, Object>();
-			tempMap.putAll(this.sendFieldMap);
-			
-			/*初始化上下文*/
-			TxActionImp action = new TxActionImp();
-			byte[] sendByte = action.first(tempMap, true);
-			
-			try {
-				byte[] respByte = HttpManager.getInstance().sendRequest(HttpManager.URL_JSON_TYPE, sendByte);
-				Log.e("==", action.afterProcess(respByte).toString());
-			} catch (HttpException e) {
-				e.printStackTrace();
-			}
-			
-			
-			
-//			receiveFieldMap = new HashMap<String, String>();
-//			for (String key : respMap.keySet()){
-//				this.receiveFieldMap.put(key, (String)respMap.get(key));
-//			}
-//			
-//			checkField39();
-			
-//			if (transferModel.shouldMac()){
-//				CheckMacHandler checkHandler = new CheckMacHandler();
-//				FSKOperator.execute("Get_CheckMAC|int:0,int:0,string:null,string:"+macsb.toString()+receiveFieldMap.get("field64"), checkHandler);//  计算MAC的数据+MAC（8字节）
-//				
-//			} else {
-//				checkField39();
-//			}
-			
-			return ;
-		}
-			
 		// 如果是冲正则提示冲正。
 		if (AppDataCenter.getReversalMap().containsValue(this.transferCode)){
 			BaseActivity.getTopActivity().showDialog( "正在进行冲正，请稍候 ", transferCode);
@@ -376,11 +387,29 @@ public class TransferPacketThread extends Thread{
 				CommandReturn cmdReturn = (CommandReturn) msg.obj;
 				if (cmdReturn.Return_Result == 0){ // mac计算成功
 					try {
-						sendJSONStringer.key("field64").value(Util.BytesToString(cmdReturn.Return_PSAMMAC));
+						String mac = Util.BytesToString(cmdReturn.Return_PSAMMAC);
+						sendFieldMap.put("field64", mac);
+						
+						sendJSONStringer.key("field64").value(mac);
 						sendJSONStringer.endObject();
+						
 						Log.e("send JSON", sendJSONStringer.toString());
 						
-						sendPacket();
+						//sendPacket();
+						byte[] tempByte = new byte[sendByte.length];
+						System.arraycopy(sendByte, 0, tempByte, 0, sendByte.length-8);
+						System.arraycopy(cmdReturn.Return_PSAMMAC, 0, tempByte, tempByte.length-8, 8);
+						
+						try{
+							byte[] resp = new SocketTransport().sendData(tempByte);
+							
+							Log.e("response--", action.afterProcess(resp).toString());
+						} catch(Exception e){
+							e.printStackTrace();
+						}
+						
+						
+						
 					} catch (JSONException e) {
 						e.printStackTrace();
 					} catch (IllegalStateException e) {

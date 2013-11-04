@@ -26,7 +26,6 @@ public class TxActionImp {
 
 	private Map<String, Object> req_map = null;
 	private String clientTransferCode = "";
-	private boolean flag = false;
 
 	/* DOTO:输出请求报文 */
 	String msgIn = null;
@@ -34,7 +33,7 @@ public class TxActionImp {
 	String TPDU = "6000050000";
 	String msgHeader = "603110000000";
 
-	public byte[] first(Map<String, Object> reqMap, boolean flag) {
+	public byte[] first(Map<String, Object> reqMap) {
 		req_map = reqMap;
 
 		// 请求报文中取得交易码
@@ -192,7 +191,7 @@ public class TxActionImp {
 	 *            ,context
 	 * @return reqMsg (tpdu+头文件+报文类型+位图+位图对应的域值)
 	 */
-	private byte[] depacketize( boolean hasHeader) {
+	private byte[] depacketize() {
 		/* 组装请求报文 */
 		byte[] reqMsg = null;
 		/* TPDU */
@@ -217,35 +216,21 @@ public class TxActionImp {
 		System.out.println("位图和域值长度:\t" + data.length);
 		System.out.println("位图和域值:\t" + ConvertUtil.trace(data));
 
-		if(hasHeader){
-			/**
-			 * 组装字节类型报文；（tpdu[BCD压缩5字节]+头文件[BCD压缩6字节]）+
-			 * 报文类型【BCD压缩2字节】+位图【8字节】&&位图对应的域值
-			 * */
-			ByteBuffer sendBuf = ByteBuffer.allocate(msgTPDU.length + msgHeader.length + msgtypeid.length + data.length);
-			/* TPDU */
-			sendBuf.put(msgTPDU);
-			/* 头文件 */
-			sendBuf.put(msgHeader);
-			/* 报文类型 */
-			sendBuf.put(msgtypeid);
-			/* 位图+位图对应的域值 */
-			sendBuf.put(data);
+		/**
+		 * 组装字节类型报文；（tpdu[BCD压缩5字节]+头文件[BCD压缩6字节]）+
+		 * 报文类型【BCD压缩2字节】+位图【8字节】&&位图对应的域值
+		 * */
+		ByteBuffer sendBuf = ByteBuffer.allocate(msgTPDU.length + msgHeader.length + msgtypeid.length + data.length);
+		/* TPDU */
+		sendBuf.put(msgTPDU);
+		/* 头文件 */
+		sendBuf.put(msgHeader);
+		/* 报文类型 */
+		sendBuf.put(msgtypeid);
+		/* 位图+位图对应的域值 */
+		sendBuf.put(data);
 
-			reqMsg = sendBuf.array();
-		}else{
-			/**
-			 * 组装字节类型报文；（
-			 * 报文类型【BCD压缩2字节】+位图【8字节】&&位图对应的域值
-			 * */
-			ByteBuffer sendBuf = ByteBuffer.allocate(msgtypeid.length + data.length);
-			/* 报文类型 */
-			sendBuf.put(msgtypeid);
-			/* 位图+位图对应的域值 */
-			sendBuf.put(data);
-
-			reqMsg = sendBuf.array();
-		}
+		reqMsg = sendBuf.array();
 		
 
 		return reqMsg;
@@ -277,7 +262,7 @@ public class TxActionImp {
 
 		print(m);
 
-		byte[] reqMsg = depacketize(flag);
+		byte[] reqMsg = depacketize();
 
 		return reqMsg;
 	}
