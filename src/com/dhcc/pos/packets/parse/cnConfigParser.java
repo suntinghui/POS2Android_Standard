@@ -1,10 +1,8 @@
 package com.dhcc.pos.packets.parse;
 
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -65,18 +63,6 @@ public class cnConfigParser {
 		return mfact;
 	}
 
-	/** Creates a message factory from the file located at the specified URL. */
-	public static CnMessageFactory createFromUrl(URL url) throws IOException {
-		mfact = CnMessageFactory.getInstance();
-		InputStream stream = url.openStream();
-		try {
-			parse(mfact, stream);
-		} finally {
-			stream.close();
-		}
-		return mfact;
-	}
-
 	/**
 	 * 解析xml文件并初始化相关配置信息
 	 * 
@@ -132,9 +118,6 @@ public class cnConfigParser {
 			mfact.setTPDUlengthAttr(msgtypeid, tpduLength);
 			mfact.setHeaderLengthAttr(msgtypeid, headerLength);
 			
-//			 System.out.println(String.format("msgtypeid :%s, headerlen :%d",msgtypeid,
-//			 headerlen));
-
 				System.out.println("Adding 8583 header for msgtypeid: " + msgtypeid
 						+ "tpduLength:" + tpduLength + "  headerLength: " + headerLength);
 		}
@@ -167,10 +150,6 @@ public class cnConfigParser {
 				String init_filed_data = f.getChildNodes().item(0) == null ? null
 						: f.getChildNodes().item(0).getNodeValue();
 
-				// /System.out.println("######################"+init_filed_data+"$$$$$$$$$$$"+f.getTextContent());
-
-				// System.out.println(String.format("fieldid: %d, init_filed_data: %s, datatype: %s, length: %d",fieldid,
-				// init_filed_data, datatype.name(), length));
 				m.setValue(fieldid, init_filed_data, datatype, length);
 			}
 			mfact.addMessageTemplate(m);
@@ -182,8 +161,6 @@ public class cnConfigParser {
 		for (int i = 0; i < nodes.getLength(); i++) {
 			elem = (Element) nodes.item(i);
 			String msgtypeid = elem.getAttribute("msgtypeid");
-//			System.out.println("========= msgtypeid: " + msgtypeid
-//					+ " =========");
 
 			if (msgtypeid.length() != 4) {
 				throw new IOException("Invalid type for parse guide: "
@@ -201,8 +178,6 @@ public class cnConfigParser {
 			for (int j = 0; j < fields.getLength(); j++) {
 				Element f = (Element) fields.item(j);
 				int fieldid = Integer.parseInt(f.getAttribute("id"));
-				// System.out.println(String.format("fieldid: %s,typename:%s",
-				// fieldid,f.getAttribute("datatype")));
 
 				cnType datatype = cnType.valueOf(f.getAttribute("datatype"));
 				int length = 0;
@@ -221,8 +196,6 @@ public class cnConfigParser {
 				 * */
 				parseMap.put(fieldid, new cnFieldParseInfo(datatype, length, isOk));
 
-				// System.out.println(String.format("fieldid: %s, datatype: %s,length: %d",fieldid,
-				// datatype.name(),length));
 			}
 			/*
 			 * 以msgtypeid作为key 将parseMap放入（CnMessageFactory）的ParseMap之中

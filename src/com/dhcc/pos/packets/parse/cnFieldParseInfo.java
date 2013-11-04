@@ -1,6 +1,5 @@
 package com.dhcc.pos.packets.parse;
 
-
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.text.ParseException;
@@ -11,29 +10,27 @@ import com.dhcc.pos.packets.cnType;
 import com.dhcc.pos.packets.cnValue;
 import com.dhcc.pos.packets.util.ConvertUtil;
 
-
-
-
 /***
  * 解析字段域信息
- * @author maple
- *参考：此类中参数为配置文件中的<field id="3" datatype="NUMERIC" length="6" />
+ * 
+ * @author maple 参考：此类中参数为配置文件中的<field id="3" datatype="NUMERIC" length="6" />
  */
 public class cnFieldParseInfo {
-	
-	
-	//消息类型
+
+	// 消息类型
 	private cnType type;
-	//消息长度
+	// 消息长度
 	private int length;
-	//是否必输项
+	// 是否必输项
 	private boolean isOk;
 
-	
 	/**
 	 * 创建字段解析器
-	 * @param t 字段类型
-	 * @param len 字段类型为ALPHA或NUMERIC必须设置此长度
+	 * 
+	 * @param t
+	 *            字段类型
+	 * @param len
+	 *            字段类型为ALPHA或NUMERIC必须设置此长度
 	 * 
 	 */
 	public cnFieldParseInfo(cnType t, int len, boolean isOk) {
@@ -42,25 +39,20 @@ public class cnFieldParseInfo {
 		}
 		type = t;
 		length = len;
-		this.isOk= isOk;
+		this.isOk = isOk;
 	}
-
 
 	public int getLength() {
 		return length;
 	}
 
-
 	public cnType getType() {
 		return type;
 	}
 
-	
 	public boolean getIsOk() {
 		return isOk;
 	}
-
-
 
 	/**
 	 * 解析二进制字段信息
@@ -74,50 +66,45 @@ public class cnFieldParseInfo {
 	 * @return
 	 * @throws ParseException
 	 */
-	public cnValue<?> parseBinary(byte[] buf, int pos, int field)
-			throws ParseException {
-		/*字节类型的变量的长度*/
+	public cnValue<?> parseBinary(byte[] buf, int pos, int field) throws ParseException {
+		/* 字节类型的变量的长度 */
 		byte[] fieldLength = null;
-		/*转换后变量的长度*/
+		/* 转换后变量的长度 */
 		String len = null;
-		/*转换后的域值*/
+		/* 转换后的域值 */
 		String value = null;
-		
+
 		ConvertUtil.trace(buf);
-		
+
 		/* 左靠齐右补零的数据再次删掉右补的零 */
 		if (field == 2 || field == 22 || field == 32 || field == 35 || field == 36 || field == 48 || field == 60 || field == 61) {
-			
-			if (type == cnType.NUMERIC) {
-				byte[] temp = new byte[(length % 2 == 0) ? (length / 2)
-						: (length / 2 + length % 2)];
 
-				System.arraycopy(buf, pos, temp, 0,
-						(length % 2 == 0) ? (length / 2)
-								: (length / 2 + length % 2));
+			if (type == cnType.NUMERIC) {
+				byte[] temp = new byte[(length % 2 == 0) ? (length / 2) : (length / 2 + length % 2)];
+
+				System.arraycopy(buf, pos, temp, 0, (length % 2 == 0) ? (length / 2) : (length / 2 + length % 2));
 				value = ConvertUtil.Bcd2Str_0(temp);
 
-				return new cnValue<Number>(cnType.NUMERIC, new BigInteger(
-						new String(value)), length);
+				return new cnValue<Number>(cnType.NUMERIC, new BigInteger(new String(value)), length);
 			} else if (type == cnType.LLNVAR) {
 				fieldLength = new byte[1];
 				System.arraycopy(buf, pos, fieldLength, 0, 1);
 				len = ConvertUtil.Bcd2Str(fieldLength);
 
 				length = Integer.parseInt(len);
-				
+
 				System.out.println(ConvertUtil.trace(fieldLength));
 				byte[] data = null;
 				length = length / 2 + length % 2;
 				data = new byte[length];
-				
+
 				System.arraycopy(buf, pos + 1, data, 0, length);
-				if(Integer.parseInt(len)%2==0){
+				if (Integer.parseInt(len) % 2 == 0) {
 					value = ConvertUtil.Bcd2Str(data);
-				}else{
+				} else {
 					value = ConvertUtil.Bcd2Str_0(data);
 				}
-				
+
 				return new cnValue<String>(type, value, Integer.parseInt(len));
 			} else if (type == cnType.LLLNVAR) {
 				fieldLength = new byte[2];
@@ -139,69 +126,63 @@ public class cnFieldParseInfo {
 					length = length / 2;
 					value = new String(buf, pos + 2, length);
 					value = ConvertUtil.Bcd2Str(value.getBytes());
-					return new cnValue<String>(type, value,
-							Integer.parseInt(len));
+					return new cnValue<String>(type, value, Integer.parseInt(len));
 				}
 			}
 
 		} else {
 			if (type == cnType.ALPHA) {
 
-				return new cnValue<String>(type, new String(buf, pos, length),
-						length);
+				return new cnValue<String>(type, new String(buf, pos, length), length);
 			} else if (type == cnType.NUMERIC) {
-				byte[] temp = new byte[(length % 2 == 0) ? (length / 2)
-						: (length / 2 + length % 2)];
+				byte[] temp = new byte[(length % 2 == 0) ? (length / 2) : (length / 2 + length % 2)];
 
-				System.arraycopy(buf, pos, temp, 0,
-						(length % 2 == 0) ? (length / 2)
-								: (length / 2 + length % 2));
-				if(length%2==0){
+				System.arraycopy(buf, pos, temp, 0, (length % 2 == 0) ? (length / 2) : (length / 2 + length % 2));
+				if (length % 2 == 0) {
 					value = ConvertUtil.Bcd2Str(temp);
-				}else{
+				} else {
 					value = ConvertUtil._0Bcd2Str(temp);
 				}
-				
-				return new cnValue<Number>(cnType.NUMERIC, new BigInteger(
-						new String(value)), length);
+
+				return new cnValue<Number>(cnType.NUMERIC, new BigInteger(new String(value)), length);
 
 			} else if (type == cnType.LLVAR) {
-//				length = (((buf[pos] & 0xf0) >> 4) * 10) + (buf[pos] & 0x0f);
-//				String value = new String(buf, pos + 1,length);
-			
+				// length = (((buf[pos] & 0xf0) >> 4) * 10) + (buf[pos] & 0x0f);
+				// String value = new String(buf, pos + 1,length);
+
 				fieldLength = new byte[1];
-				
+
 				System.arraycopy(buf, pos, fieldLength, 0, 1);
 				len = ConvertUtil.Bcd2Str(fieldLength);
 				System.out.println(ConvertUtil.trace(fieldLength));
-			
+
 				length = Integer.parseInt(len);
-//				System.out.println(String.format("pos: %d, length: %d", pos,
-//						length));
-				
-				return new cnValue<String>(type,new String(buf, pos + 1,length),length );
+				// System.out.println(String.format("pos: %d, length: %d", pos,
+				// length));
+
+				return new cnValue<String>(type, new String(buf, pos + 1, length), length);
 
 			} else if (type == cnType.LLLVAR) {
 				fieldLength = new byte[2];
 
 				System.arraycopy(buf, pos, fieldLength, 0, 2);
 				len = ConvertUtil.Bcd2Str(fieldLength);
-				
+
 				System.out.println(ConvertUtil.trace(fieldLength));
-				
+
 				length = Integer.parseInt(len);
 
-//				System.out.println(String.format("pos: %d, length: %d", pos,
-//						length));
+				// System.out.println(String.format("pos: %d, length: %d", pos,
+				// length));
 				byte[] data = new byte[length];
-				
-				if(field == 62 ){
+
+				if (field == 62) {
 					System.arraycopy(buf, pos + 2, data, 0, length);
 					value = ConvertUtil.bytesToHexString(data);
-				}else{
+				} else {
 					value = new String(buf, pos + 2, length);
 				}
-				
+
 				return new cnValue<String>(type, value, length);
 			} else if (type == cnType.LLNVAR) {
 				fieldLength = new byte[1];
@@ -209,23 +190,21 @@ public class cnFieldParseInfo {
 				len = ConvertUtil.Bcd2Str(fieldLength);
 
 				length = Integer.parseInt(len);
-//				System.out.println(String.format("pos: %d, length: %d", pos,
-//						length));
+				// System.out.println(String.format("pos: %d, length: %d", pos,
+				// length));
 				if (length % 2 == 1) {
 					length = length / 2 + length % 2;
 					byte[] value2 = new byte[length];
 					System.arraycopy(buf, pos + 1, value2, 0, length);
 					value = ConvertUtil._0Bcd2Str(value2);
-					return new cnValue<String>(type, value,
-							Integer.parseInt(len));
+					return new cnValue<String>(type, value, Integer.parseInt(len));
 				} else {
 					length = length / 2;
 					byte[] value2 = new byte[length];
 					System.arraycopy(buf, pos + 1, value2, 0, length);
 					value = ConvertUtil.Bcd2Str(value2);
-					
-					return new cnValue<String>(type, value,
-							Integer.parseInt(len));
+
+					return new cnValue<String>(type, value, Integer.parseInt(len));
 				}
 			} else if (type == cnType.LLLNVAR) {
 				fieldLength = new byte[2];
@@ -236,8 +215,8 @@ public class cnFieldParseInfo {
 				length = Integer.parseInt(len);
 
 				System.out.println(ConvertUtil.trace(fieldLength));
-//				System.out.println(String.format("pos: %d, length: %d", pos,
-//						length));
+				// System.out.println(String.format("pos: %d, length: %d", pos,
+				// length));
 
 				/* 当长度为奇数时 */
 				if (length % 2 == 1) {
@@ -249,8 +228,7 @@ public class cnFieldParseInfo {
 					length = length / 2;
 					value = new String(buf, pos + 2, length);
 					value = ConvertUtil.Bcd2Str(value.getBytes());
-					return new cnValue<String>(type, value,
-							Integer.parseInt(len));
+					return new cnValue<String>(type, value, Integer.parseInt(len));
 				}
 			} else if (type == cnType.AMOUNT) {
 				byte[] digits = new byte[6];
@@ -258,20 +236,16 @@ public class cnFieldParseInfo {
 				System.arraycopy(buf, pos, digits, 0, 6);
 				value = ConvertUtil.Bcd2Str(digits);
 
-//				System.out.println(String.format("pos: %d, length: %d", pos,
-//						length));
+				// System.out.println(String.format("pos: %d, length: %d", pos,
+				// length));
 
-				return new cnValue<BigDecimal>(type, new BigDecimal(
-						Double.parseDouble(value.toString()) / 100.00), 12);
-			} else if (type == cnType.DATE10 || type == cnType.DATE4
-					|| type == cnType.DATE_EXP || type == cnType.TIME) {
+				return new cnValue<BigDecimal>(type, new BigDecimal(Double.parseDouble(value.toString()) / 100.00), 12);
+			} else if (type == cnType.DATE10 || type == cnType.DATE4 || type == cnType.DATE_EXP || type == cnType.TIME) {
 
-				int[] tens = new int[(type.getLength() / 2)
-						+ (type.getLength() % 2)];
+				int[] tens = new int[(type.getLength() / 2) + (type.getLength() % 2)];
 				int start = 0;
 				for (int i = pos; i < pos + tens.length; i++) {
-					tens[start++] = (((buf[i] & 0xf0) >> 4) * 10)
-							+ (buf[i] & 0x0f);
+					tens[start++] = (((buf[i] & 0xf0) >> 4) * 10) + (buf[i] & 0x0f);
 				}
 				Calendar cal = Calendar.getInstance();
 				if (type == cnType.DATE10) {
@@ -301,9 +275,7 @@ public class cnFieldParseInfo {
 					cal.set(Calendar.SECOND, 0);
 					cal.set(Calendar.DATE, 1);
 					// Set the month in the date
-					cal.set(Calendar.YEAR,
-							cal.get(Calendar.YEAR)
-									- (cal.get(Calendar.YEAR) % 100) + tens[0]);
+					cal.set(Calendar.YEAR, cal.get(Calendar.YEAR) - (cal.get(Calendar.YEAR) % 100) + tens[0]);
 					cal.set(Calendar.MONTH, tens[1] - 1);
 					return new cnValue<Date>(type, cal.getTime());
 				} else if (type == cnType.TIME) {

@@ -2,7 +2,7 @@ package com.dhc.pos.agent.client;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
+import java.nio.ByteBuffer;
 import java.security.KeyStore;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateFactory;
@@ -18,7 +18,7 @@ import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
 import org.apache.http.conn.ssl.SSLSocketFactory;
-import org.apache.http.entity.StringEntity;
+import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.params.BasicHttpParams;
@@ -35,13 +35,15 @@ import com.dhc.pos.util.TrafficUtil;
 
 public class HttpManager {
 	
-	private static boolean isHttpsFlag				= true;
+	private static boolean isHttpsFlag				= false;
 	
 	private static HttpManager instance 			= null;
 	
 	private final static int ConnectionTimeout 		= 27000;
 	private final static int SocketTimeout 			= 32000;
 	private final static int SocketBufferSize 		= 8192;
+	
+	byte[] reqHeaderLenght = new byte[2];// 报文头
 	
 	private HttpClient httpClient 					= null;
 	private HttpPost httpPost 						= null;
@@ -113,7 +115,7 @@ public class HttpManager {
 		HttpConnectionParams.setSoTimeout(httpParameters, SocketTimeout);
 		HttpConnectionParams.setSocketBufferSize(httpParameters,SocketBufferSize);
 		HttpClientParams.setRedirecting(httpParameters, true); // 设置重定向，默认为true
-		HttpProtocolParams.setUserAgent(httpParameters, "MBSClient/Android-1.0");
+		//HttpProtocolParams.setUserAgent(httpParameters, "MBSClient/Android-1.0");
 		return new DefaultHttpClient(httpParameters);
 	}
 	
@@ -195,17 +197,40 @@ public class HttpManager {
 		HttpResponse response = null;
 		InputStream responseStream =null;
 		
+		///////////////////
+		int reqMsgLen = outBytes.length;
+
+		reqHeaderLenght[0] = (byte) ((reqMsgLen & 0xff00) >> 8);
+		reqHeaderLenght[1] = (byte) (reqMsgLen & 0xff);
+
+		/**
+		 * 组装字节类型报文 数据长度+{头文件（tpdu[BCD压缩5字节]+头文件[BCD压缩6字节]）+
+		 * 报文类型【BCD压缩2字节】+位图【8字节】&&位图对应的域值}
+		 * */
+		System.out.println("reqMsgLen：" + reqMsgLen);
+		ByteBuffer sendBuf = ByteBuffer.allocate(reqHeaderLenght.length + reqMsgLen);
+		/* 2个字节的报文长度值 */
+		sendBuf.put(reqHeaderLenght);
+		/* 头文件（tpdu[BCD压缩5字节]+头文件[BCD压缩6字节]）+ 报文类型【BCD压缩2字节】+位图【8字节】&&位图对应的域值+ */
+		sendBuf.put(outBytes);
+
+		outBytes = sendBuf.array();
+		
+		//////////////////
+		
 		if (type == HttpManager.URL_JSON_TYPE){
 			httpPost = new HttpPost(Constant.JSONURL);
 		} else {
 			httpPost = new HttpPost(Constant.XMLURL);
 		}
 		
-		httpPost.setHeader("Content-Type", "text/xml");
+		//httpPost.setHeader("Content-Type", "text/xml");
 		
 		try {
-			httpPost.setEntity(new StringEntity(new String(outBytes, "GBK"),"GBK"));
-		} catch (UnsupportedEncodingException e1) {
+			//httpPost.setEntity(new StringEntity(new String(outBytes, "GBK"),"GBK"));
+			//httpPost.setEntity(new InputStreamEntity(new ByteArrayInputStream(outBytes), outBytes.length));
+			httpPost.setEntity(new ByteArrayEntity(outBytes));
+		} catch (Exception e1) {
 			throw new HttpException(e1.getMessage());
 		}
 		

@@ -16,6 +16,7 @@ import com.dhcc.pos.packets.util.ConvertUtil;
  * iso 8583 消息信息   报文总长度（2-4字节）+报头信息+报文类型+位图（8（64位图）或16（128位图））+各字段域+结束符
  */
 public class CnMessage {
+	public String bitMap = null;
 
 	/** 消息类型 */
 	private String msgtypeid;
@@ -393,9 +394,10 @@ public class CnMessage {
 		}
 		System.out.println("位图长度:\t" + bout.toByteArray().length + "\r十六进制位图：\r"+ConvertUtil.trace(bout.toByteArray()));
 
-		String bitmapStr = ConvertUtil.bytesToHexString(bout.toByteArray());
 		
-		System.out.println("bitmapStr:" + bitmapStr);
+		bitMap = ConvertUtil.bytesToHexString(bout.toByteArray());
+		
+		System.out.println("bitMap[" + bitMap + "]");
 		
 		/**Fields
 		 * 紧跟着位图后面 位图所有域的值

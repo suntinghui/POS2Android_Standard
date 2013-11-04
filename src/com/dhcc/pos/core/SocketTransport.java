@@ -8,16 +8,15 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.nio.ByteBuffer;
 
-import com.dhcc.pos.packets.CnMessage;
-import com.dhcc.pos.packets.CnMessageFactory;
 import com.dhcc.pos.packets.util.ConvertUtil;
 
 public class SocketTransport {
 
 	/*
-	 * private static String host = "192.168.22.18"; private static int port =
-	 * 6061; private static int timeout = 45000; private static int headlength =
-	 * 2;
+	 * private static String host = "192.168.22.18"; 
+	 * private static int port = 6061; 
+	 * private static int timeout = 45000; 
+	 * private static int headlength = 2;
 	 */
 	private String host;
 	private int port;
@@ -58,13 +57,10 @@ public class SocketTransport {
 
 	/**
 	 * @param reqMsg
-	 * @param mfact
-	 * @param m
-	 * @param context
 	 * @return
 	 * @throws CommunicationException
 	 */
-	public byte[] sendData(byte reqMsg[],CnMessageFactory mfact,CnMessage m,TxContext context) throws Exception {
+	public byte[] sendData(byte reqMsg[]) throws Exception {
 
 		System.out.println("####################sendData####################" + "\r");
 
@@ -79,8 +75,7 @@ public class SocketTransport {
 		 * 报文类型【BCD压缩2字节】+位图【8字节】&&位图对应的域值}
 		 * */
 		System.out.println("reqMsgLen：" + reqMsgLen);
-		ByteBuffer sendBuf = ByteBuffer.allocate(reqHeaderLenght.length
-				+ reqMsgLen);
+		ByteBuffer sendBuf = ByteBuffer.allocate(reqHeaderLenght.length + reqMsgLen);
 		/* 2个字节的报文长度值 */
 		sendBuf.put(reqHeaderLenght);
 		/* 头文件（tpdu[BCD压缩5字节]+头文件[BCD压缩6字节]）+ 报文类型【BCD压缩2字节】+位图【8字节】&&位图对应的域值+ */
@@ -88,15 +83,6 @@ public class SocketTransport {
 
 		reqMsg = sendBuf.array();
 		System.out.println("发送报文msg 16进制:\r" + ConvertUtil.trace(reqMsg));
-		/**
-		 * =========================测试解析报文================================
-		 * */
-		
-		/**
-		 * =========================================================
-		 * */
-
-		/**/
 		
 		try {
 			// 获取一个连接到socket服务的套接字
@@ -115,6 +101,7 @@ public class SocketTransport {
 
 			
 			respMsg = revData(respHeaderLenght, is);
+			
 			System.out.println("接收到的交易平台报文16进制:\r" + ConvertUtil.trace(respMsg));
 			/**
 			 * 响应报文写入文件
@@ -133,7 +120,6 @@ public class SocketTransport {
 			System.out.println("socket协议有误");
 			throw new Exception("网络问题请重试");
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			throw new Exception("网络问题请重试");
 		} finally {
@@ -163,11 +149,10 @@ public class SocketTransport {
 	 * @param is
 	 * @return
 	 */
-	public byte[] revData(byte[] respHeaderLenght, InputStream is) {
+	private byte[] revData(byte[] respHeaderLenght, InputStream is) {
 		try {
 			is.read(respHeaderLenght);
-			int size = ((respHeaderLenght[0] & 0xff) << 8)
-					| (respHeaderLenght[1] & 0xff);
+			int size = ((respHeaderLenght[0] & 0xff) << 8) | (respHeaderLenght[1] & 0xff);
 
 			respMsg = new byte[size];
 
@@ -204,65 +189,4 @@ public class SocketTransport {
 		return respMsg;
 	}
 
-
-
-	// 输出一个报文内容
-	private static void print(CnMessage m) {
-		System.out.println("----------------------------------------------------- "
-				+ m.getField(11));
-		System.out.println("Message Header = [" + new String(m.getmsgHeader()) + "]");
-		System.out.println("Message MsgType = [" + m.getMsgTypeID() + "]");
-		m.hasField(1);
-		for (int i = 2; i < 128; i++) {
-			if (m.hasField(i)) {
-				System.out.println("FieldID: " + i + " <" + m.getField(i).getType()
-						+ ">\t[" + m.getObjectValue(i) + "]\t["
-						+ m.getField(i).toString() + "]");
-			}
-		}
-	}
-
-	
-
-	/* set get 方法 */
-	public String getHost() {
-		return host;
-	}
-
-	public void setHost(String host) {
-		this.host = host;
-	}
-
-	public int getPort() {
-		return port;
-	}
-
-	public void setPort(int port) {
-		this.port = port;
-	}
-
-	public int getTimeout() {
-		return timeout;
-	}
-
-	public void setTimeout(int timeout) {
-		this.timeout = timeout;
-	}
-
-	public int getHeadlength() {
-		return headlength;
-	}
-
-	public void setHeadlength(int headlength) {
-		this.headlength = headlength;
-	}
-
-	public int getTPDUlength() {
-		return TPDUlength;
-	}
-
-	public void setTPDUlength(int tPDUlength) {
-		TPDUlength = tPDUlength;
-	}
-	
 }

@@ -25,9 +25,7 @@ import com.dhc.pos.fsk.FSKService;
 import com.dhc.pos.model.FieldModel;
 import com.dhc.pos.model.ReversalModel;
 import com.dhc.pos.model.TransferModel;
-import com.dhcc.pos.core.TxAction;
 import com.dhcc.pos.core.TxActionImp;
-import com.dhcc.pos.core.TxContext;
 import com.itron.android.ftf.Util;
 import com.itron.protol.android.CommandReturn;
 
@@ -180,22 +178,24 @@ public class TransferPacketThread extends Thread{
 			tempMap.putAll(this.sendFieldMap);
 			
 			/*初始化上下文*/
-			TxContext txContext = new TxContext();
-			txContext.setReq_map(tempMap);
+			TxActionImp action = new TxActionImp();
+			byte[] sendByte = action.first(tempMap, true);
 			
-			TxAction action = new TxActionImp();
-			action.first(txContext);
-			
-			
-			HashMap<String, Object> respMap = (HashMap<String, Object>) txContext.getResp_map();
-			Log.e("---", respMap.toString());
-			
-			receiveFieldMap = new HashMap<String, String>();
-			for (String key : respMap.keySet()){
-				this.receiveFieldMap.put(key, (String)respMap.get(key));
+			try {
+				byte[] respByte = HttpManager.getInstance().sendRequest(HttpManager.URL_JSON_TYPE, sendByte);
+				Log.e("==", action.afterProcess(respByte).toString());
+			} catch (HttpException e) {
+				e.printStackTrace();
 			}
 			
-			checkField39();
+			
+			
+//			receiveFieldMap = new HashMap<String, String>();
+//			for (String key : respMap.keySet()){
+//				this.receiveFieldMap.put(key, (String)respMap.get(key));
+//			}
+//			
+//			checkField39();
 			
 //			if (transferModel.shouldMac()){
 //				CheckMacHandler checkHandler = new CheckMacHandler();
