@@ -115,7 +115,7 @@ public class cnValue<T> {
 		} else if (datatype == cnType.LLNVAR || datatype == cnType.LLLNVAR) {
 			return value.toString();
 		} else if (value instanceof Date) {
-			return datatype.formatDate((Date) value);
+			return datatype.format((Date) value);
 		}
 		return value.toString();
 	}
@@ -166,12 +166,6 @@ public class cnValue<T> {
 			}
 		}
 	}
-
-	public void writeBinary(OutputStream outs, boolean binary, Object fieldId) throws IOException {
-		outs.write(ConvertUtil.hexStringToBytes(toString()));
-	}
-
-	// 转BCD
 
 	/**
 	 * @param value

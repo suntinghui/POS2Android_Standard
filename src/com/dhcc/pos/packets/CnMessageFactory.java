@@ -50,7 +50,6 @@ public class CnMessageFactory {
 	 */
 	private Map<String, List<Integer>> parseOrder = new HashMap<String, List<Integer>>();
 
-
 	/**
 	 * 报头包含的消息类型,格式 (msgtypeid, headerlength) msgtypeid 消息类型 headerlength 报头长度
 	 */
@@ -60,7 +59,6 @@ public class CnMessageFactory {
 	 * 报头包含的消息类型,格式 (msgtypeid, TPDUlength) msgtypeid 消息类型 TPDUlength TPDU头长度
 	 */
 	private Map<String, Integer> msgTPDUlengthAttr = new HashMap<String, Integer>();
-
 
 	/**
 	 * 二进消息标识符，用来表示创建或解析时，使用的是二进制消息 true 使用的是二进制消息 false，用来表示创建或解析时，使用的是ASCII码
@@ -86,7 +84,6 @@ public class CnMessageFactory {
 	public boolean getUseBinary() {
 		return useBinary;
 	}
-
 
 	/**
 	 * 通过模板中指定的消息类型id创建报文（消息） 并根据该模板中已有的域给位图赋值 设定了： etx: 报文组装完成设置结束符 Binary:
@@ -239,9 +236,6 @@ public class CnMessageFactory {
 		}
 
 		System.out.println("\t位图: \t" + bs.toString());
-
-		/** =====打印位图===== */
-		/** ========== */
 
 		// Parse each field
 		Map<Integer, cnFieldParseInfo> parseGuide = parseMap.get(m.getMsgTypeID());

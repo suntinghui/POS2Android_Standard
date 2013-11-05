@@ -18,17 +18,12 @@ import com.dhcc.pos.packets.util.ConvertUtil;
 
 public class TxActionImp {
 
-	SocketTransport socketTransport;
-
 	CnMessageFactory mfact;
 
 	CnMessage m;
 
 	private Map<String, Object> req_map = null;
 	private String clientTransferCode = "";
-
-	/* DOTO:输出请求报文 */
-	String msgIn = null;
 
 	String TPDU = "6000050000";
 	String msgHeader = "603110000000";
@@ -56,8 +51,6 @@ public class TxActionImp {
 	public byte[] process() {
 		System.out.println("\t####################process####################" + "\r");
 
-		byte[] respMsg = null;
-
 		try {
 			// 创建请求数据
 			byte[] reqMsg = beforeProcess();
@@ -83,7 +76,7 @@ public class TxActionImp {
 
 		Map<Integer, cnFieldParseInfo> parseMap = mfact.getParseMap(msgType);
 
-		// 对于域不使用二进制
+		// TODO ? 对于域不使用二进制
 		m.setBinary(true);
 
 		/**
@@ -302,15 +295,12 @@ public class TxActionImp {
 		System.out.println("Message Header = \t[" + new String(m.getmsgHeader()) + "]");
 		System.out.println("Message TypeID = \t[" + m.getMsgTypeID() + "]");
 		m.hasField(1);
+		
 		for (int i = 2; i < 128; i++) {
 			if (m.hasField(i)) {
 				System.out.println("Field: " + i + " <" + m.getField(i).getType() + ">\t(" + m.getField(i).getLength() + ")\t[" + m.getField(i).toString() + "]" + "      \t[" + m.getObjectValue(i) + "]");
 			}
 		}
-	}
-
-	public void setSocketTransport(SocketTransport socketTransport) {
-		this.socketTransport = socketTransport;
 	}
 
 	public void setMfact(CnMessageFactory mfact) {
