@@ -27,7 +27,6 @@ import com.dhcc.pos.packets.cnType;
  */
 public class cnConfigParser {
 
-
 	static CnMessageFactory mfact = null;
 
 	/**
@@ -40,7 +39,7 @@ public class cnConfigParser {
 	 */
 	public static CnMessageFactory createFromXMLConfigFile(InputStream stream) throws Exception {
 		mfact = CnMessageFactory.getInstance();
-		
+
 		try {
 
 			if (stream != null) {
@@ -55,7 +54,7 @@ public class cnConfigParser {
 						e.printStackTrace();
 					}
 				}
-			} 
+			}
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 			// throws new FileNotFoundException("找不到文件");
@@ -70,10 +69,8 @@ public class cnConfigParser {
 	 * @param stream
 	 * @throws IOException
 	 */
-	protected static void parse(CnMessageFactory mfact, InputStream stream)
-			throws IOException {
-		final DocumentBuilderFactory docfact = DocumentBuilderFactory
-				.newInstance();
+	protected static void parse(CnMessageFactory mfact, InputStream stream) throws IOException {
+		final DocumentBuilderFactory docfact = DocumentBuilderFactory.newInstance();
 		/**
 		 * 变量
 		 * */
@@ -81,53 +78,50 @@ public class cnConfigParser {
 		Document doc = null;
 		NodeList nodes = null;
 		Element root, elem = null;
-		
+
 		try {
 			docb = docfact.newDocumentBuilder();
 			doc = docb.parse(stream);
 		} catch (ParserConfigurationException ex) {
-			System.out.println("Cannot parse XML configuration:"+ex);
+			System.out.println("Cannot parse XML configuration:" + ex);
 			return;
 		} catch (SAXException ex) {
-			System.out.println("Parsing XML configuration："+ex);
+			System.out.println("Parsing XML configuration：" + ex);
 			return;
 		}
 		root = doc.getDocumentElement();
 		// Read the j8583cn message configure headers
 		nodes = root.getElementsByTagName("header");
 		System.out.println("############\theader :\t############");
-		
+
 		for (int i = 0; i < nodes.getLength(); i++) {
 			elem = (Element) nodes.item(i);
 			int headerLength = Integer.parseInt(elem.getAttribute("headerLength"));
 			int tpduLength = Integer.parseInt(elem.getAttribute("tpduLength"));
 
-			if (elem.getChildNodes() == null
-					|| elem.getChildNodes().getLength() == 0) {
+			if (elem.getChildNodes() == null || elem.getChildNodes().getLength() == 0) {
 				throw new IOException("Invalid header element");
 			}
 
 			String msgtypeid = elem.getChildNodes().item(0).getNodeValue();
 
 			if (msgtypeid.length() != 4) {
-				throw new IOException("Invalid msgtypeid for header: "
-						+ elem.getAttribute("msgtypeid"));
+				throw new IOException("Invalid msgtypeid for header: " + elem.getAttribute("msgtypeid"));
 			}
-			
-			/**设置tpdu 报文头*/
+
+			/** 设置tpdu 报文头 */
 			mfact.setTPDUlengthAttr(msgtypeid, tpduLength);
 			mfact.setHeaderLengthAttr(msgtypeid, headerLength);
-			
-				System.out.println("Adding 8583 header for msgtypeid: " + msgtypeid
-						+ "tpduLength:" + tpduLength + "  headerLength: " + headerLength);
+
+			System.out.println("Adding 8583 header for msgtypeid: " + msgtypeid + "tpduLength:" + tpduLength + "  headerLength: " + headerLength);
 		}
 
 		// Read the message templates
 		nodes = root.getElementsByTagName("template");
-		
+
 		System.out.println("############\ttemplate:new cnMessage()\t############");
 		CnMessage m = null;
-		
+
 		for (int i = 0; i < nodes.getLength(); i++) {
 			elem = (Element) nodes.item(i);
 			String msgtypeid = elem.getAttribute("msgtypeid");
@@ -147,8 +141,7 @@ public class cnConfigParser {
 					length = Integer.parseInt(f.getAttribute("length"));
 				}
 
-				String init_filed_data = f.getChildNodes().item(0) == null ? null
-						: f.getChildNodes().item(0).getNodeValue();
+				String init_filed_data = f.getChildNodes().item(0) == null ? null : f.getChildNodes().item(0).getNodeValue();
 
 				m.setValue(fieldid, init_filed_data, datatype, length);
 			}
@@ -157,24 +150,22 @@ public class cnConfigParser {
 
 		// Read the parsing guides
 		nodes = root.getElementsByTagName("parseinfo");
-		 System.out.println("############\tparseinfo: map\t############");
+		System.out.println("############\tparseinfo: map\t############");
 		for (int i = 0; i < nodes.getLength(); i++) {
 			elem = (Element) nodes.item(i);
 			String msgtypeid = elem.getAttribute("msgtypeid");
 
 			if (msgtypeid.length() != 4) {
-				throw new IOException("Invalid type for parse guide: "
-						+ msgtypeid);
+				throw new IOException("Invalid type for parse guide: " + msgtypeid);
 			}
 			NodeList fields = elem.getElementsByTagName("field");
-			
+
 			/*
-			 * new cnFieldParseInfo(datatype, length) 给解析的字段赋值
-			 * 以fieldid作为key cnFieldParseInfo内值为value
-			 * */
+			 * new cnFieldParseInfo(datatype, length) 给解析的字段赋值 以fieldid作为key
+			 * cnFieldParseInfo内值为value
+			 */
 			Map<Integer, cnFieldParseInfo> parseMap = new TreeMap<Integer, cnFieldParseInfo>();
-			
-			
+
 			for (int j = 0; j < fields.getLength(); j++) {
 				Element f = (Element) fields.item(j);
 				int fieldid = Integer.parseInt(f.getAttribute("id"));
@@ -184,23 +175,22 @@ public class cnConfigParser {
 				if (f.getAttribute("length").length() > 0) {
 					length = Integer.parseInt(f.getAttribute("length"));
 				}
-				
+
 				boolean isOk = false;
-				if (f.getAttribute("isOk")!=null && !(f.getAttribute("isOk").equalsIgnoreCase("false"))) {
+				if (f.getAttribute("isOk") != null && !(f.getAttribute("isOk").equalsIgnoreCase("false"))) {
 					isOk = Boolean.parseBoolean(f.getAttribute("isOk"));
 				}
-				
+
 				/*
 				 * new cnFieldParseInfo(datatype, length) 给解析的字段赋值
 				 * 然后以fieldid作为key 把上面内容放入parseMap中
-				 * */
+				 */
 				parseMap.put(fieldid, new cnFieldParseInfo(datatype, length, isOk));
 
 			}
 			/*
 			 * 以msgtypeid作为key 将parseMap放入（CnMessageFactory）的ParseMap之中
-			 * 
-			 * */
+			 */
 			mfact.setParseMap(msgtypeid, parseMap);
 		}
 

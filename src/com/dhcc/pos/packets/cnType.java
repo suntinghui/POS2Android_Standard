@@ -1,5 +1,6 @@
 package com.dhcc.pos.packets;
 
+import android.annotation.SuppressLint;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.Format;
@@ -15,7 +16,6 @@ import java.util.Date;
 public enum cnType {
 	// 数字长度不足左补0 BCD码压缩
 	NUMERIC(true, 0),
-
 	// 字符或数字长度不足右补空格
 	ALPHA(true, 0),
 	// 字符或数字长度不足左补0
@@ -61,7 +61,8 @@ public enum cnType {
 	}
 
 	// 日期格式化
-	public String formatDate(Date value) {
+	@SuppressLint("SimpleDateFormat")
+	public String format(Date value) {
 		if (this == DATE10)
 			return new SimpleDateFormat("MMddHHmmss").format(value);
 		if (this == DATE4)
@@ -74,7 +75,6 @@ public enum cnType {
 		throw new IllegalArgumentException("Cannot format date as " + this);
 	}
 
-	// ///////////////////////////////////////
 	/**
 	 * Formats the string to the given length (length is only useful if type is
 	 * ALPHA).

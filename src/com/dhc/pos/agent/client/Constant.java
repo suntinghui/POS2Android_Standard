@@ -6,6 +6,8 @@ public class Constant {
 	
 	public static boolean isEFET							= true;
 	
+	public static boolean isDEBUG							= true;
+	
 	public static final String APPFILEPATH 				    = "/data/data/" + ApplicationEnvironment.getInstance().getApplication().getPackageName();
 	
 	// assets下的文件保存路径

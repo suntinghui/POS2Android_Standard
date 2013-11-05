@@ -612,6 +612,9 @@ public class TransferLogic {
 	 * 冲正
 	 */
 	 public boolean reversalAction(){
+		 return false;
+		 
+		 /*
 		 if (Constant.isStatic){
 			 return false;
 		 }
@@ -636,6 +639,7 @@ public class TransferLogic {
 			 
 			 return true;
 		 }
+		 */
 	 }
 	 
 	 /**
