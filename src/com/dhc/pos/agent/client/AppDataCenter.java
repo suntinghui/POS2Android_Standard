@@ -265,14 +265,15 @@ public class AppDataCenter {
 			int totalLength = cmdReturn.Return_PSAMTrack.length * 2;
 			int field35Length = Integer.parseInt(__PSAMTRACK.substring(0, 2), 16) * 2;
 			
-			if (totalLength == field35Length+2){ // 只有35域
-				__FIELD35 = __PSAMTRACK.substring(2);
-				__FIELD36 = "";
-				
-			} else {
-				__FIELD35 = __PSAMTRACK.substring(2, 2+field35Length);
-				__FIELD36 = __PSAMTRACK.substring(2+field35Length+2);
-			}
+			// TODO
+//			if (totalLength == field35Length+2){ // 只有35域
+//				__FIELD35 = __PSAMTRACK.substring(2);
+//				__FIELD36 = "";
+//				
+//			} else {
+//				__FIELD35 = __PSAMTRACK.substring(2, 2+field35Length);
+//				__FIELD36 = __PSAMTRACK.substring(2+field35Length+2);
+//			}
 			
 			__FIELD35 = "4392257501725638D090610117539137";
 		}

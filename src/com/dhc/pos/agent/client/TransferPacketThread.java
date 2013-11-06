@@ -46,6 +46,8 @@ public class TransferPacketThread extends Thread{
 	private HashMap<String, String> sendFieldMap;
 	private HashMap<String, String> receiveFieldMap;
 	
+	private boolean isSign = false;
+	
 	byte[] sendByte = new byte[]{};
 	
 	private TxActionImp action;
@@ -160,30 +162,48 @@ public class TransferPacketThread extends Thread{
 				action = new TxActionImp();
 				sendByte = action.first(tempMap);
 				
-				byte[] tempByte = new byte[sendByte.length-8-11];
-				System.arraycopy(sendByte, 11, tempByte, 0, tempByte.length);
-				
-				CalcMacHandler calcHandler = new CalcMacHandler();
-				FSKOperator.execute("Get_MAC|int:0,int:1,string:null,string:" + new String(tempByte), calcHandler);
-				
-				
-//				receiveFieldMap = new HashMap<String, String>();
-//				for (String key : respMap.keySet()){
-//					this.receiveFieldMap.put(key, (String)respMap.get(key));
-//				}
-//				
-//				checkField39();
-				
-//				if (transferModel.shouldMac()){
-//					CheckMacHandler checkHandler = new CheckMacHandler();
-//					FSKOperator.execute("Get_CheckMAC|int:0,int:0,string:null,string:"+macsb.toString()+receiveFieldMap.get("field64"), checkHandler);//  计算MAC的数据+MAC（8字节）
-//					
-//				} else {
-//					checkField39();
-//				}
+				if (isSign){
+					try{
+						byte[]  resp = null;
+						/**前置联网函数*/
+						resp = 	HttpManager.getInstance().sendRequest(HttpManager.URL_JSON_TYPE, sendByte);
+						/**前置联网函数*/
+						resp = new SocketTransport().sendData(sendByte);
+						
+						HashMap<String, Object> respMap = action.afterProcess(resp);
+						
+						Log.e("response--", resp.toString());
+						
+						
+						receiveFieldMap = new HashMap<String, String>();
+						for (String key : respMap.keySet()){
+							this.receiveFieldMap.put(key, (String)respMap.get(key));
+						}
+						
+						checkField39();
+						
+					} catch(Exception e){
+						e.printStackTrace();
+					}
+					
+				} else {
+					byte[] tempByte = new byte[sendByte.length-8];
+					System.arraycopy(sendByte, 0, tempByte, 0, tempByte.length);
+					
+					CalcMacHandler calcHandler = new CalcMacHandler();
+					FSKOperator.execute("Get_MAC|int:0,int:1,string:null,string:" + "00000000", calcHandler);
+				}
 				
 				return ;
 			}
+			
+//			if (transferModel.shouldMac()){
+//				CheckMacHandler checkHandler = new CheckMacHandler();
+//				FSKOperator.execute("Get_CheckMAC|int:0,int:0,string:null,string:"+macsb.toString()+receiveFieldMap.get("field64"), checkHandler);//  计算MAC的数据+MAC（8字节）
+//				
+//			} else {
+//				checkField39();
+//			}
 			
 			if (transferModel.shouldMac()){ // 需要进行MAC计算
 				CalcMacHandler calcHandler = new CalcMacHandler();
