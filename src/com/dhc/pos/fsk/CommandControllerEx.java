@@ -9,6 +9,7 @@ import android.util.Log;
 import com.dhc.pos.agent.client.AppDataCenter;
 import com.dhc.pos.util.DateUtil;
 import com.dhc.pos.util.StringUtil;
+import com.dhcc.pos.packets.util.ConvertUtil;
 import com.itron.android.ftf.Util;
 import com.itron.protol.android.CommandController;
 import com.itron.protol.android.CommandReturn;
@@ -95,8 +96,12 @@ public class CommandControllerEx extends CommandController {
 		return super.Get_ExtPsamNo();
 	}
 
+	
+	
 	public CommandReturn Get_MAC(int MAC_mode, int keyindex, String Random,
 			String data) {
+		System.out.println("data:" + data);
+		System.out.println("data2:" + ConvertUtil.trace(data.getBytes()));
 		return super.Get_MAC(MAC_mode, keyindex, null, data.getBytes());
 	}
 

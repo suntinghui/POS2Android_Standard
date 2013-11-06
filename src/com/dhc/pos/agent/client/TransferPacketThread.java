@@ -160,19 +160,11 @@ public class TransferPacketThread extends Thread{
 				action = new TxActionImp();
 				sendByte = action.first(tempMap);
 				
-				byte[] tempByte = new byte[sendByte.length-8];
-				System.arraycopy(sendByte, 0, tempByte, 0, tempByte.length);
+				byte[] tempByte = new byte[sendByte.length-8-11];
+				System.arraycopy(sendByte, 11, tempByte, 0, tempByte.length);
 				
 				CalcMacHandler calcHandler = new CalcMacHandler();
 				FSKOperator.execute("Get_MAC|int:0,int:1,string:null,string:" + new String(tempByte), calcHandler);
-				
-//				try {
-//					byte[] respByte = HttpManager.getInstance().sendRequest(HttpManager.URL_JSON_TYPE, sendByte);
-//					Log.e("==", action.afterProcess(respByte).toString());
-//				} catch (HttpException e) {
-//					e.printStackTrace();
-//				}
-				
 				
 				
 //				receiveFieldMap = new HashMap<String, String>();
@@ -399,6 +391,9 @@ public class TransferPacketThread extends Thread{
 						byte[] tempByte = new byte[sendByte.length];
 						System.arraycopy(sendByte, 0, tempByte, 0, sendByte.length-8);
 						System.arraycopy(cmdReturn.Return_PSAMMAC, 0, tempByte, tempByte.length-8, 8);
+						
+						String f64 = "12345679";
+//						System.arraycopy(f64.getBytes(), 0, tempByte, tempByte.length-8, 8);
 						
 						try{
 							byte[] resp = new SocketTransport().sendData(tempByte);
