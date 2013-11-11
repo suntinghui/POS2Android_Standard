@@ -76,7 +76,6 @@ public class TxActionImp {
 
 		Map<Integer, cnFieldParseInfo> parseMap = mfact.getParseMap(msgType);
 
-		// TODO ? 对于域不使用二进制
 		m.setBinary(true);
 
 		/**
