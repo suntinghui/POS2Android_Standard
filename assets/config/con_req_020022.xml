@@ -7,7 +7,6 @@
 	<field key="fieldTrancode" value="020022"  />
 	
 	<field key="fieldTransType" value="0200"  />
-	<field key="fieldBitmap" value="3020048020C08811" />
 	<field key="field2" value=""  />
 	<field key="field3" value="000000"  />
 	<field key="field4" value="__field4"  />
@@ -21,7 +20,8 @@
 	<field key="field49" value="156" />
 	<field key="field52" value="__PSAMPIN" />
 	<field key="field53" value="0600000000000000"  />
-	<field key="field60" value="22#__BATCHNUM#000521" />
+	<field key="field60" value="22#__BATCHNUM" />
+	<field key="field64" value="00000000" />
 	
 </root>
 	

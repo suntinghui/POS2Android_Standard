@@ -46,7 +46,7 @@ public class TransferPacketThread extends Thread{
 	private HashMap<String, String> sendFieldMap;
 	private HashMap<String, String> receiveFieldMap;
 	
-	private boolean isSign = true;
+	private boolean isSign = false;
 	
 	byte[] sendByte = new byte[]{};
 	
@@ -164,7 +164,11 @@ public class TransferPacketThread extends Thread{
 				
 				if (isSign){
 					try{
-						byte[] resp = new SocketTransport().sendData(sendByte);
+						byte[]  resp = null;
+						/**前置联网函数*/
+						resp = 	HttpManager.getInstance().sendRequest(HttpManager.URL_JSON_TYPE, sendByte);
+						/**前置联网函数*/
+						resp = new SocketTransport().sendData(sendByte);
 						
 						HashMap<String, Object> respMap = action.afterProcess(resp);
 						
@@ -407,6 +411,9 @@ public class TransferPacketThread extends Thread{
 						byte[] tempByte = new byte[sendByte.length];
 						System.arraycopy(sendByte, 0, tempByte, 0, sendByte.length-8);
 						System.arraycopy(cmdReturn.Return_PSAMMAC, 0, tempByte, tempByte.length-8, 8);
+						
+						String f64 = "12345679";
+//						System.arraycopy(f64.getBytes(), 0, tempByte, tempByte.length-8, 8);
 						
 						try{
 							byte[] resp = new SocketTransport().sendData(tempByte);

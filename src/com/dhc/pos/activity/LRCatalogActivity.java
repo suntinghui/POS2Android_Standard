@@ -3,7 +3,6 @@ package com.dhc.pos.activity;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -27,13 +26,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.view.ViewGroup.LayoutParams;
+import android.view.WindowManager;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.FrameLayout;
@@ -46,6 +44,7 @@ import android.widget.SlidingDrawer.OnDrawerOpenListener;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.dhc.pos.R;
 import com.dhc.pos.activity.view.SlidingDrawerEx;
 import com.dhc.pos.activity.view.viewflow.CircleFlowIndicator;
 import com.dhc.pos.activity.view.viewflow.ViewFlow;
@@ -57,8 +56,6 @@ import com.dhc.pos.dynamic.core.Event;
 import com.dhc.pos.dynamic.core.ViewPage;
 import com.dhc.pos.model.CatalogModel;
 import com.dhc.pos.util.AssetsUtil;
-import com.dhc.pos.util.StringUtil;
-import com.dhc.pos.R;
 
 public class LRCatalogActivity extends BaseActivity implements OnItemClickListener, OnScrollListener, OnDrawerOpenListener, OnDrawerCloseListener{
 	
@@ -123,16 +120,16 @@ public class LRCatalogActivity extends BaseActivity implements OnItemClickListen
 	    this.refreshArrowImage();
 	    
 	    
-//	    try{
+	    try{
 //	    	Event event = new Event(null,"transfer", null);
-//	        //String fskStr = "Get_MAC|int:0,int:1,string:null,string:0210703A00810AD088131643922575017256380000000000000000019800101151040924012300084801000030303030303030303030303241303030303231363739313035333630313730313130313539223438303130303030202020343830313030303020202031353626000000000000000014220000520005210003435550";
-//	    	String fskStr = "Get_RenewVendorTerID|string:195300430101001,string:19530024";
+//	        String fskStr = "Get_MAC|int:0,int:1,string:null,string:F133D6A3AF9014AB";
+////	    	String fskStr = "Get_RenewVendorTerID|string:195300430101001,string:19530024";
 //	        event.setFsk(fskStr);
 //	        event.trigger();
-//	        
-//	    }catch(Exception e){
-//	    	
-//	    }
+	        
+	    }catch(Exception e){
+	    	
+	    }
 	    
         
 	}

@@ -42,7 +42,7 @@ public class SocketTransport {
 
 	public SocketTransport() {
 		this.host = "58.221.92.138";
-		this.port = 9999;
+		this.port = 9090;
 		this.timeout = 45000;
 		this.headlength = 12;
 	}
