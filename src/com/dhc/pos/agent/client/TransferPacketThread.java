@@ -30,7 +30,7 @@ import com.itron.protol.android.CommandReturn;
  */
 
 public class TransferPacketThread extends Thread {
-
+	byte[] respByte = null;
 	private String transferCode; // 交易码
 	private TransferModel transferModel;
 	private HashMap<String, String> map; // 字段值，需要替换由config解析出来的value值
@@ -182,7 +182,6 @@ public class TransferPacketThread extends Thread {
 		}
 
 		try {
-			byte[] respByte = null;
 			if (Constant.isStatic) {
 				respByte = StaticNetClient.getMessageByTransCode(this.transferCode);
 			} else {
@@ -228,8 +227,8 @@ public class TransferPacketThread extends Thread {
 
 			} else {
 				if (transferModel.shouldMac()) {
-					byte[] tempByte = new byte[sendByte.length - 8 - 11];
-					System.arraycopy(sendByte, 11, tempByte, 0, tempByte.length);
+					byte[] tempByte = new byte[respByte.length - 8 - 11];
+					System.arraycopy(respByte, 11, tempByte, 0, tempByte.length);
 
 					CheckMacHandler checkHandler = new CheckMacHandler();
 					FSKOperator.execute("Get_CheckMAC|int:0,int:0,string:null,string:" + StringUtil.bytes2HexString(tempByte) + ",string:" + receiveFieldMap.get("field64"), checkHandler);// 计算MAC的数据+MAC（8字节）

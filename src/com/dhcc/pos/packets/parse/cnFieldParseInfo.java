@@ -134,15 +134,16 @@ public class cnFieldParseInfo {
 		} else {
 			if (type == cnType.ALPHA) {
 
-				byte[] temp = new byte[length];
-				System.arraycopy(buf, pos, temp, 0, length);
-				if(field == 64){
-					return new cnValue<String>(type, StringUtil.bytes2HexString(temp),
+//				byte[] temp = new byte[length];
+//				System.arraycopy(buf, pos, temp, 0, length);
+//				if(field == 64){
+//					System.out.println("64:" + StringUtil.bytes2HexString(temp));
+//					System.out.println("64:" + new String(temp));
+//					return new cnValue<String>(type, StringUtil.bytes2HexString(temp),
+//							length);
+//				}
+				return new cnValue<String>(type, new String(buf, pos, length),
 							length);
-				}else{
-					return new cnValue<String>(type, new String(buf, pos, length),
-							length);
-				}
 			} else if (type == cnType.NUMERIC) {
 				byte[] temp = new byte[(length % 2 == 0) ? (length / 2) : (length / 2 + length % 2)];
 

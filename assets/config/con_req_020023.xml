@@ -8,7 +8,7 @@
 	
 	<field key="fieldTransType" value="0200"  />
 	<field key="field2" value=""  />
-	<field key="field3" value="004000"  />
+	<field key="field3" value="200000"  />
 	<field key="field4" value="__field4"  />
 	<field key="field11" value="__TRACEAUDITNUM"  />
 	<field key="field22" value="__FIELD22" />
@@ -22,7 +22,10 @@
 	<field key="field42" value="__VENDOR"  />
 	<field key="field49" value="156" />
 	<field key="field52" value="__PSAMPIN" />
-	<field key="field60" value="23#__BATCHNUM#000300" />
-	<field key="field90" value="0210#__field11"  />
+	<field key="field60" value="23#__BATCHNUM" />
+	<!-- 61.1  原批号 +  61.2 原 POS 流水号 -->
+	<field key="field61" value="#__BATCHNUM" />
+	<field key="field64" value="00000000" />
+	<!-- <field key="field90" value="0210#__field11"  /> -->
 	
 </root>

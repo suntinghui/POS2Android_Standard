@@ -85,6 +85,7 @@ public class TxActionImp {
 			System.out.println("设置TPDU出错。");
 			System.exit(-1);
 		}
+		
 		/**
 		 * 设置报文头的数据
 		 * */
@@ -93,14 +94,17 @@ public class TxActionImp {
 			System.out.println("设置报文头出错。");
 			System.exit(-1);
 		}
-
+		/* =================变量声明================= */
 		Iterator<Integer> it = parseMap.keySet().iterator();
-		/* 字段 */
+		/** 字段 */
 		int fieldId = 0;
-		/* 字段值 */
+		/** 字段值 */
 		Object value = null;
+		
 		cnFieldParseInfo xfield = null;
-
+		/**字段类型*/
+		cnType type = null;
+		
 		// if(!req_map.isEmpty()){
 		while (it.hasNext()) {
 			fieldId = it.next();
@@ -108,51 +112,66 @@ public class TxActionImp {
 			if (parseMap.get(fieldId) != null && !parseMap.get(fieldId).equals("")) {
 
 				xfield = parseMap.get(fieldId);
-				/** 屏蔽请求报文的无值域 */
+				type = xfield.getType();
+				/** 屏蔽请求报文的无值域 req_map中不为空时有效 */
 				if (req_map.get("field" + String.valueOf(fieldId)) != null && !req_map.get("field" + String.valueOf(fieldId)).equals("")) {
 
 					value = req_map.get("field" + String.valueOf(fieldId));
 					/* 当等于0时为变量域 故此拿请求过来的值求出大小 */
-					if (xfield.getType() != cnType.AMOUNT) {
+					if (type != cnType.AMOUNT) {
 						if (xfield.getLength() != 0 && xfield.getIsOk() == true) {
 							if (value == null || value.equals("")) {
-								throw new IllegalArgumentException(String.valueOf(fieldId) + " 域 is must input! ");
-							} else if (value.toString().length() != xfield.getLength()) {
-								if (value.toString().length() < xfield.getLength()) {
-									throw new IllegalArgumentException(String.valueOf(fieldId) + " 域值 too short! ");
+								throw new IllegalArgumentException(
+										String.valueOf(fieldId)
+												+ " 域 is must input! ");
+							} else if (value.toString().length() != xfield
+									.getLength()) {
+								if (value.toString().length() < xfield
+										.getLength()) {
+									throw new IllegalArgumentException(
+											String.valueOf(fieldId)
+													+ " 域值 Too Short! ");
 								} else {
-									throw new IllegalArgumentException(String.valueOf(fieldId) + " 域值 too lang! ");
+									throw new IllegalArgumentException(
+											String.valueOf(fieldId)
+													+ " 域值 Too Long! ");
 								}
 
 							}
-							m.setValue(fieldId, value, xfield.getType(), xfield.getLength());
+							m.setValue(fieldId, value, type, xfield.getLength());
 						} else if (xfield.getLength() == 0 && xfield.getIsOk() == true) {
 							if (value == null) {
 								throw new IllegalArgumentException(String.valueOf(fieldId) + " 域 is must input! ");
 							}
 
-							if (xfield.getType() == cnType.AMOUNT) {
+							if (type == cnType.AMOUNT) {
 
-								m.setValue(fieldId, BigDecimal.valueOf(Double.parseDouble(value.toString())), xfield.getType(), xfield.getLength());
+								m.setValue(fieldId, BigDecimal.valueOf(Double.parseDouble(value.toString())), type, xfield.getLength());
 							} else {
-								m.setValue(fieldId, value, xfield.getType(), value.toString().length());
+								m.setValue(fieldId, value, type, value.toString().length());
 							}
 						} else if (xfield.getLength() != 0 && xfield.getIsOk() == false) {
 							if (value != null) {
-								if (value.toString().length() != xfield.getLength()) {
-									if (value.toString().length() < xfield.getLength()) {
-										throw new IllegalArgumentException(String.valueOf(fieldId) + " 域值 too short! ");
+								if (value.toString().length() != xfield
+										.getLength()) {
+									if (value.toString().length() < xfield
+											.getLength()) {
+										throw new IllegalArgumentException(
+												String.valueOf(fieldId)
+														+ " 域值 Too Short! ");
 									} else {
-										throw new IllegalArgumentException(String.valueOf(fieldId) + " 域值 too lang!");
+										throw new IllegalArgumentException(
+												String.valueOf(fieldId)
+														+ " 域值 Too Long!");
 									}
 
 								}
 
-								if (xfield.getType() == cnType.AMOUNT) {
+								if (type == cnType.AMOUNT) {
 
-									m.setValue(fieldId, BigDecimal.valueOf(Double.parseDouble(value.toString())), xfield.getType(), xfield.getLength());
+									m.setValue(fieldId, BigDecimal.valueOf(Double.parseDouble(value.toString())), type, xfield.getLength());
 								} else {
-									m.setValue(fieldId, value, xfield.getType(), value.toString().length());
+									m.setValue(fieldId, value, type, value.toString().length());
 								}
 
 							}
@@ -160,12 +179,12 @@ public class TxActionImp {
 						} else if (xfield.getLength() == 0 && xfield.getIsOk() == false) {
 							if (value != null) {
 								if (!value.toString().trim().equals(""))
-									m.setValue(fieldId, value, xfield.getType(), value.toString().length());
+									m.setValue(fieldId, value, type, value.toString().length());
 							}
 
 						}
 					} else {
-						m.setValue(fieldId, BigDecimal.valueOf(Double.parseDouble(value.toString()) / 100.00), xfield.getType(), xfield.getLength());
+						m.setValue(fieldId, BigDecimal.valueOf(Double.parseDouble(value.toString()) / 100.00), type, xfield.getLength());
 					}
 				}
 			} else {
