@@ -97,9 +97,11 @@ public class CommandControllerEx extends CommandController {
 		byte[] xorBytes = XORUtil.xorAfterData(StringUtil.hexStringToBytes(data));
 		byte[] macBytes = mac.getBytes();
 		
+		/*
 		Log.e("校验MAC原数据：", ConvertUtil.trace(StringUtil.hexStringToBytes(data)));
 		Log.e("异或MAC后的数据：", ConvertUtil.trace(xorBytes));
 		Log.e("服务器返回MAC：", ConvertUtil.trace(macBytes));
+		**/
 
 		// 将原数据（做过异或）与mac值合并
 		byte[] concatBytes = new byte[xorBytes.length + macBytes.length];
