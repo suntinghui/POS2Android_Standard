@@ -6,6 +6,7 @@ import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
 
+import com.dhc.pos.util.StringUtil;
 import com.dhcc.pos.packets.cnType;
 import com.dhcc.pos.packets.cnValue;
 import com.dhcc.pos.packets.util.ConvertUtil;
@@ -135,8 +136,8 @@ public class cnFieldParseInfo {
 
 				byte[] temp = new byte[length];
 				System.arraycopy(buf, pos, temp, 0, length);
-				if(field == 64 || field == 52){
-					return new cnValue<String>(type, ConvertUtil.bytesToHexString(temp),
+				if(field == 52){
+					return new cnValue<String>(type, StringUtil.bytes2HexString(temp),
 							length);
 				}else{
 					return new cnValue<String>(type, new String(buf, pos, length),
