@@ -136,7 +136,7 @@ public class cnFieldParseInfo {
 
 				byte[] temp = new byte[length];
 				System.arraycopy(buf, pos, temp, 0, length);
-				if(field == 52){
+				if(field == 64){
 					return new cnValue<String>(type, StringUtil.bytes2HexString(temp),
 							length);
 				}else{
