@@ -10,6 +10,7 @@ import com.dhc.pos.agent.client.AppDataCenter;
 import com.dhc.pos.util.DateUtil;
 import com.dhc.pos.util.StringUtil;
 import com.dhc.pos.util.XORUtil;
+import com.dhcc.pos.packets.util.ConvertUtil;
 import com.itron.android.ftf.Util;
 import com.itron.protol.android.CommandController;
 import com.itron.protol.android.CommandReturn;
@@ -95,6 +96,10 @@ public class CommandControllerEx extends CommandController {
 		// 同Get_MAC注释
 		byte[] xorBytes = XORUtil.xorAfterData(StringUtil.hexStringToBytes(data));
 		byte[] macBytes = mac.getBytes();
+		
+		Log.e("校验MAC原数据：", ConvertUtil.trace(StringUtil.hexStringToBytes(data)));
+		Log.e("异或MAC后的数据：", ConvertUtil.trace(xorBytes));
+		Log.e("服务器返回MAC：", ConvertUtil.trace(macBytes));
 
 		// 将原数据（做过异或）与mac值合并
 		byte[] concatBytes = new byte[xorBytes.length + macBytes.length];
