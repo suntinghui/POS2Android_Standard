@@ -189,7 +189,6 @@ public class TransferPacketThread extends Thread {
 				respByte = new SocketTransport().sendData(sendByte);
 			}
 
-			Log.e("response--", respByte.toString());
 			HashMap<String, Object> respMap = action.afterProcess(respByte);
 
 			receiveFieldMap = new HashMap<String, String>();
@@ -197,7 +196,7 @@ public class TransferPacketThread extends Thread {
 				this.receiveFieldMap.put(key, (String) respMap.get(key));
 			}
 
-			parse();
+			parse(respByte);
 
 			BaseActivity.getTopActivity().hideDialog(BaseActivity.COUNTUP_DIALOG);
 
@@ -214,7 +213,7 @@ public class TransferPacketThread extends Thread {
 		}
 	}
 
-	private void parse() {
+	private void parse(byte[] respByte) {
 		try {
 			// 如果是上传签购单交易
 			if (this.transferCode.equals("500000001")) {
@@ -228,8 +227,8 @@ public class TransferPacketThread extends Thread {
 
 			} else {
 				if (transferModel.shouldMac()) {
-					byte[] tempByte = new byte[sendByte.length - 8 - 11];
-					System.arraycopy(sendByte, 11, tempByte, 0, tempByte.length);
+					byte[] tempByte = new byte[respByte.length - 8 - 11];
+					System.arraycopy(respByte, 11, tempByte, 0, tempByte.length);
 
 					CheckMacHandler checkHandler = new CheckMacHandler();
 					FSKOperator.execute("Get_CheckMAC|int:0,int:0,string:null,string:" + StringUtil.bytes2HexString(tempByte) + ",string:" + receiveFieldMap.get("field64"), checkHandler);// 计算MAC的数据+MAC（8字节）
