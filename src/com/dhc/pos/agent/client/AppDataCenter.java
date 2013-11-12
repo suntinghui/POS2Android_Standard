@@ -13,6 +13,7 @@ import org.xmlpull.v1.XmlPullParserException;
 
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.util.Log;
 
 import com.dhc.pos.util.AssetsUtil;
 import com.dhc.pos.util.DateUtil;
@@ -256,8 +257,11 @@ public class AppDataCenter {
 			__FIELD22 = "022"; // 如果交易输入了密码，取值为：021，如果未输入密码，取值为：022
 		}
 		
-		if (null != cmdReturn.Return_PSAMMAC)
+		if (null != cmdReturn.Return_PSAMMAC) {
 			__PSAMMAC = Util.BytesToString(cmdReturn.Return_PSAMMAC);
+			Log.e("MAC:", __PSAMMAC);
+		}
+			
 		
 		if (null != cmdReturn.Return_PSAMTrack){
 			__PSAMTRACK = Util.BinToHex(cmdReturn.Return_PSAMTrack, 0, cmdReturn.Return_PSAMTrack.length);

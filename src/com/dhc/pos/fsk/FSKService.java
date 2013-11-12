@@ -11,9 +11,12 @@ import android.util.Log;
 
 import com.dhc.pos.activity.BaseActivity;
 import com.dhc.pos.agent.client.AppDataCenter;
+import com.itron.android.lib.Logger;
 import com.itron.protol.android.CommandReturn;
 
 public class FSKService extends Service {
+	
+	Logger logger = Logger.getInstance(FSKService.class);
 	
 	public static final byte[] check_key=new byte[]{(byte)0xD5,(byte)0x2A,(byte)0x09,(byte)0x2C,(byte)0xF0,(byte)0x12,(byte)0xDD,(byte)0x0A};
 	
@@ -35,6 +38,9 @@ public class FSKService extends Service {
 		FSKStateChangeListener listener = new FSKStateChangeListener();
 		commandController = new CommandControllerEx(this, listener);
 		commandController.Init(check_key);
+		
+		// TODO 生产版本要改成False
+		logger.setDebug(false);
 	}
 
 	@Override
