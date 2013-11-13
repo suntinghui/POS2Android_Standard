@@ -145,6 +145,8 @@ public class TransferPacketThread extends Thread {
 			if (transferModel.shouldMac()) { // 需要进行MAC计算
 				byte[] tempByte = new byte[sendByte.length - 8 - 11];
 				System.arraycopy(sendByte, 11, tempByte, 0, tempByte.length);
+				
+				Log.e("计算MAC的数据：", StringUtil.bytes2HexString(tempByte));
 
 				CalcMacHandler calcHandler = new CalcMacHandler();
 				FSKOperator.execute("Get_MAC|int:0,int:1,string:null,string:" + StringUtil.bytes2HexString(tempByte), calcHandler);

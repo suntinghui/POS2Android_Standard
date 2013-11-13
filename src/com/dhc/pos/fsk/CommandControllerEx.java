@@ -88,8 +88,8 @@ public class CommandControllerEx extends CommandController {
 	public CommandReturn Get_MAC(int MAC_mode, int keyindex, String Random, String data) {
 		// 对要进行mac计算的数据，先进行异或算法，能减少手机与点付宝的通讯量。
 		// Important 最关键的是事先不进行异或计算与8583标准算法结果不一致。
-		byte[] xorBytes = XORUtil.xorAfterData(StringUtil.hexStringToBytes(data));
-		return super.Get_MAC(MAC_mode, keyindex, null, xorBytes);
+//		byte[] xorBytes = XORUtil.xorAfterData(StringUtil.hexStringToBytes(data));
+		return super.Get_MAC(MAC_mode, keyindex, null, StringUtil.hexStringToBytes(data));
 	}
 
 	public CommandReturn Get_CheckMAC(int MAC_mode, int keyindex, String Random, String data, String mac) {
