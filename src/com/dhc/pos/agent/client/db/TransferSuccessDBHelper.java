@@ -42,6 +42,27 @@ public class TransferSuccessDBHelper extends BaseDBHelper {
 		}
 	}
 	
+	public ArrayList<TransferSuccessModel> queryAll(){
+		ArrayList<TransferSuccessModel> list = new ArrayList<TransferSuccessModel>();
+		SQLiteDatabase db = this.getReadableDatabase();
+		try{
+			String[] columns = new String[]{"content"};
+			Cursor cursor = db.query(TRANSFERSUCCESS_TABLE, columns, null, null, null, null, null);
+			while (cursor.moveToNext()){
+				TransferSuccessModel model = new TransferSuccessModel();
+				model.setContent(HashMapSerialize.deserialize(cursor.getBlob(0)));
+				list.add(model);
+			}
+			cursor.close();
+		}catch(Exception e){
+			e.printStackTrace();
+		}finally{
+			db.close();
+		}
+		
+		return list;
+	}
+	
 	// 查询出所有的需要进行消费撤销的交易，注意查询条件必须是 当日 本批次的交易 且 是消费交易 且 该消费交易没有被撤销过
 	public ArrayList<TransferSuccessModel> queryNeedRevokeTransfer(){
 		ArrayList<TransferSuccessModel> list = new ArrayList<TransferSuccessModel>();

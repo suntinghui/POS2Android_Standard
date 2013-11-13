@@ -18,13 +18,13 @@
 	<field key="field35" value="__FIELD35" />
 	<!-- <field key="field36" value="__FIELD36" /> -->
 	<field key="field37" value="__field37"  />
-	<field key="field41" value="__TERID"  />
-	<field key="field42" value="__VENDOR"  />
+	<field key="field41" value="__field41"  />
+	<field key="field42" value="__field42"  />
 	<field key="field49" value="156" />
 	<field key="field52" value="__PSAMPIN" />
 	<field key="field60" value="23#__BATCHNUM" />
 	<!-- 61.1  原批号 +  61.2 原 POS 流水号 -->
-	<field key="field61" value="#__BATCHNUM" />
+	<field key="field61" value="__BATCHNUM#__field11" />
 	<field key="field64" value="00000000" />
 	<!-- <field key="field90" value="0210#__field11"  /> -->
 	

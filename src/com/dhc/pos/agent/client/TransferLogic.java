@@ -485,7 +485,6 @@ public class TransferLogic {
 		TransferSuccessDBHelper helper = new TransferSuccessDBHelper();
 		boolean flag = helper.insertATransfer(model);
 		if (!flag){
-			// TODO
 			Log.e("DATABASE", "成功交易写入数据库时操作失败。。。");
 		}
 	}
@@ -551,7 +550,7 @@ public class TransferLogic {
 		recordSuccessTransfer(fieldMap);
 		
 		TransferSuccessDBHelper helper = new TransferSuccessDBHelper();
-		helper.updateRevokeFalg(transferMap.get(GENERALTRANSFER).getSendMap().get("field90").substring(4, 10));
+		helper.updateRevokeFalg(fieldMap.get("field11"));
 		
 		try{
 			if (AppDataCenter.getValue("__TERSERIALNO").startsWith("001903")) { //001903

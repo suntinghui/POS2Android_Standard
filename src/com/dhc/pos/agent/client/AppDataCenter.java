@@ -54,7 +54,7 @@ public class AppDataCenter {
 	private static int 	  __VERSIONCODE						= 0;
 	
 	// 默认为手机日期。如果没有此默认值，在登陆失败时，跳转到错误界面等的没有日期。
-	private static String __SERVEREDATE						= DateUtil.formatDate2(new Date());
+	private static String __SERVEREDATE						= DateUtil.getSystemMonthDay();
 	
 	/*-------------------------------------------------------------------*/
 	
@@ -227,14 +227,14 @@ public class AppDataCenter {
 	}
 	
 	// 设置取得服务器返回日期
-	public static void setServerDate(String yyyyMMdd){
-		if (null!=yyyyMMdd && yyyyMMdd.matches("^\\d{8}$")){
-			__SERVEREDATE = yyyyMMdd;
+	public static void setServerDate(String MMdd){
+		if (null!=MMdd){
+			__SERVEREDATE = MMdd;
 		}
 	}
 	
 	public static String getServerDate(){
-		return DateUtil.formatDateStr(__SERVEREDATE);
+		return __SERVEREDATE;
 	}
 	
 	// 设置FSK的返回值。
