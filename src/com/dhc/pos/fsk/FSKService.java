@@ -40,7 +40,7 @@ public class FSKService extends Service {
 		commandController.Init(check_key);
 		
 		// TODO 生产版本要改成False
-		logger.setDebug(false);
+		logger.setDebug(true);
 	}
 
 	@Override
