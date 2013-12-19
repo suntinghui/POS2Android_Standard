@@ -1,6 +1,5 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <j8583cn-config>
-
 	<header tpduLength="10" headerLength="12">0100</header>
 	<header tpduLength="10" headerLength="12">0110</header>
 	
